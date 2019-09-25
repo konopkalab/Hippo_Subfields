@@ -1,0 +1,96 @@
+
+R version 3.3.2 (2016-10-31) -- "Sincere Pumpkin Patch"
+Copyright (C) 2016 The R Foundation for Statistical Computing
+Platform: x86_64-apple-darwin13.4.0 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> # XY plot cor diagnosis
+> library(ggplot2)
+> library(ggrepel)
+> library(cowplot)
+
+Attaching package: ‘cowplot’
+
+The following object is masked from ‘package:ggplot2’:
+
+    ggsave
+
+> 
+> files=list.files(pattern="Module_*")
+> myfiles=lapply(files,read.table,sep="\t",header=T)
+> 
+> cool <- read.table("coolmod.txt")
+> 
+> df=myfiles[[1]][myfiles[[1]]$Rows %in% cool$V1,]
+> col=df$Rows
+> first <- ggplot(df, aes(x=SIZE, y=value,size=value)) +
++ geom_point(aes(fill=Rows),colour="black",pch=21)+
++ theme_classic()+
++ geom_hline(yintercept = 2,linetype="dashed",colour="red")+
++ geom_hline(yintercept = 10,linetype="dashed",colour="blue")+
++ scale_fill_manual(values=c(paste(dput(as.character(col)))))+
++ geom_text_repel(aes(SIZE, value, label = df$Rows))+
++ xlim(0,750)+
++ ylim(0,40)+
++ theme(legend.position="none")+
++ ggtitle("CA1 vs CA3")+
++ xlab("Module Size")+ 
++ ylab("Preservation Z-Score")
+> 
+> 
+> df=myfiles[[2]][myfiles[[2]]$Rows %in% cool$V1,]
+> 
+> col=df$Rows
+> second <- ggplot(df, aes(x=SIZE, y=value,size=value)) +
++ geom_point(aes(fill=Rows),colour="black",pch=21)+
++ theme_classic()+
++ geom_hline(yintercept = 2,linetype="dashed",colour="red")+
++ geom_hline(yintercept = 10,linetype="dashed",colour="blue")+
++ scale_fill_manual(values=c(paste(dput(as.character(col)))))+
++ geom_text_repel(aes(SIZE, value, label = df$Rows))+
++ xlim(0,750)+
++ ylim(0,40)+
++ theme(legend.position="none")+
++ ggtitle("CA1 vs DG")+
++ xlab("Module Size")+ 
++ ylab("Preservation Z-Score")
+> 
+> plot <- plot_grid(first, second,NULL,NULL,labels=c("A", "B","C","D"), ncol = 2,align = "v")
+c("brown", "cyan", "lightgreen", "lightyellow", "midnightblue", 
+"white")
+c("brown", "cyan", "lightgreen", "lightyellow", "midnightblue", 
+"white")
+Warning messages:
+1: Removed 1 rows containing missing values (geom_point). 
+2: Removed 1 rows containing missing values (geom_text_repel). 
+3: Removed 1 rows containing missing values (geom_point). 
+4: Removed 1 rows containing missing values (geom_text_repel). 
+> save_plot("ModulePreservation_DG.pdf", plot, ncol = 2,base_height=6,base_width=3.5)
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> proc.time()
+   user  system elapsed 
+  1.039   0.045   1.088 

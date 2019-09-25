@@ -1,0 +1,7 @@
+darkturquoise
+cyan
+lightcyan
+greenyellow
+magenta
+turquoise
+brown
