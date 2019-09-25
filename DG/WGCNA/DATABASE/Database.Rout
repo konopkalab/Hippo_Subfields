@@ -1,0 +1,45 @@
+
+R version 3.3.2 (2016-10-31) -- "Sincere Pumpkin Patch"
+Copyright (C) 2016 The R Foundation for Statistical Computing
+Platform: x86_64-apple-darwin13.4.0 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[Previously saved workspace restored]
+
+> ### Merging multiple dataframe by rownames
+> ## list of tables with the gene counts
+> load("GeneSets_Disorders.RData")
+> load("GeneSets_SingleCell.RData")
+> 
+> file=list.files(pattern=".txt")
+> mod=read.table(file)
+> 
+> GeneSets$Mod=mod
+> 
+> myfiles=c(GeneSets,GeneSetsSingleCell)
+> res <- Reduce(function(x, y) {
++     merge(x, y, all=TRUE, by="Gene")
++ }, myfiles)
+> 
+> database=res[!(is.na(res$kWithin)),]
+> 
+> vec=c("Gene", "ModuleColor","kWithin","ASD", "ASD_SC", "ASD12", "ASD16","EPILEPSY","FMRP","ID","NEURO_DEV_RISK","RBP","SYN","SZ_LOCI","SZ_Sklar","SZ_Genes","TF","ENDO","EPEND_ZS","EPITH_ZS","ASTRO","ASTRO_ZS","NEURO_CA1_ZS","NEURO_SA1_ZS","INTERN_ZS","NEURO","LAKE_EX","LAKE_IN","MICRO","MICROG_ZS","MYEL","OLIG","OLIG_ZS")
+>                   
+> database=database[,match(vec,names(database))]
+Error in `[.data.frame`(database, , match(vec, names(database))) : 
+  undefined columns selected
+Calls: [ -> [.data.frame
+Execution halted

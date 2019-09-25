@@ -1,0 +1,305 @@
+
+R version 3.3.2 (2016-10-31) -- "Sincere Pumpkin Patch"
+Copyright (C) 2016 The R Foundation for Statistical Computing
+Platform: x86_64-apple-darwin13.4.0 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[Previously saved workspace restored]
+
+> 
+> library(GenomicRanges)
+Loading required package: stats4
+Loading required package: BiocGenerics
+Loading required package: parallel
+
+Attaching package: ‘BiocGenerics’
+
+The following objects are masked from ‘package:parallel’:
+
+    clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
+    clusterExport, clusterMap, parApply, parCapply, parLapply,
+    parLapplyLB, parRapply, parSapply, parSapplyLB
+
+The following objects are masked from ‘package:stats’:
+
+    IQR, mad, xtabs
+
+The following objects are masked from ‘package:base’:
+
+    anyDuplicated, append, as.data.frame, cbind, colnames, do.call,
+    duplicated, eval, evalq, Filter, Find, get, grep, grepl, intersect,
+    is.unsorted, lapply, lengths, Map, mapply, match, mget, order,
+    paste, pmax, pmax.int, pmin, pmin.int, Position, rank, rbind,
+    Reduce, rownames, sapply, setdiff, sort, table, tapply, union,
+    unique, unsplit, which, which.max, which.min
+
+Loading required package: S4Vectors
+
+Attaching package: ‘S4Vectors’
+
+The following objects are masked from ‘package:base’:
+
+    colMeans, colSums, expand.grid, rowMeans, rowSums
+
+Loading required package: IRanges
+Loading required package: GenomeInfoDb
+Warning messages:
+1: package ‘GenomicRanges’ was built under R version 3.3.3 
+2: package ‘S4Vectors’ was built under R version 3.3.3 
+3: package ‘IRanges’ was built under R version 3.3.3 
+> library(rtracklayer)
+> library(LOLA)
+> library(ggplot2)
+> library(ggrepel)
+> 
+> files=list.files(pattern="ModuleOutput_*")
+> myfiles=as.data.frame(lapply(files,read.table,sep="\t")[[1]])
+> coolmod=read.table("coolmod.txt")
+> mod=myfiles[myfiles$ModuleColor %in% coolmod$V1,]
+> 
+> totGTF <- import.bed(con="Homo_sapiens.GRCh37.87_Protein_Coding_GENEONLY.bed")
+> 
+> userSets <- list()
+> indbgSets <- list()
+> locResults <- list()
+> tab <- list()
+> for (i in unique(mod$ModuleColor))
++ { 
++ userSets[[i]] <- totGTF[totGTF$name %in% mod[mod$ModuleColor == i,]$Gene]
++ indbgSets[[i]] <- totGTF[!(totGTF$name %in% mod[mod$ModuleColor == i,]$Gene)]
++ dbPath = system.file("extdata", "disorders3", package="LOLA")
++ regionDB = loadRegionDB(dbPath)
++ locResults[[i]] = runLOLA(userSets[[i]], indbgSets[[i]], regionDB, cores=3,minOverlap = 3)
++ tab[[i]]=as.data.frame(locResults[[i]])
++ tab[[i]]$qValue=NULL
++ write.table(tab[[i]], file = paste("GWAS_ENRICH_", i, ".txt",sep = ""),sep="\t",quote=F)
++ tab[[i]]$Class <- rep(i,nrow(tab[[1]]))
++ df <- do.call(rbind,tab)
++ df$adj=p.adjust(10^-df$pValueLog,"BH")
++ df$log=-log10(df$adj)
++ }
+Reading collection annotations: 
+	database: found collection annotation:/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/collection.txt
+Reading region annotations...
+/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3//database/regions
+	In 'database', found index file:/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/index.txt
+Collection: database. Creating size file...
+database
+Reading 5 files...
+1: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/ADHD.bed
+2: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/ASD.bed
+3: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/BIP.bed
+4: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/MDD.bed
+5: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/SCZ.bed
+Converting GRanges to GRangesList.
+You have non-disjoint userSets.
+Calculating unit set overlaps...
+Calculating universe set overlaps...
+Calculating Fisher scores...
+Reading collection annotations: 
+	database: found collection annotation:/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/collection.txt
+Reading region annotations...
+/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3//database/regions
+	In 'database', found index file:/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/index.txt
+Collection: database. Creating size file...
+database
+Reading 5 files...
+1: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/ADHD.bed
+2: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/ASD.bed
+3: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/BIP.bed
+4: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/MDD.bed
+5: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/SCZ.bed
+Converting GRanges to GRangesList.
+You have non-disjoint userSets.
+Calculating unit set overlaps...
+Calculating universe set overlaps...
+Calculating Fisher scores...
+Reading collection annotations: 
+	database: found collection annotation:/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/collection.txt
+Reading region annotations...
+/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3//database/regions
+	In 'database', found index file:/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/index.txt
+Collection: database. Creating size file...
+database
+Reading 5 files...
+1: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/ADHD.bed
+2: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/ASD.bed
+3: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/BIP.bed
+4: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/MDD.bed
+5: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/SCZ.bed
+Converting GRanges to GRangesList.
+You have non-disjoint userSets.
+Calculating unit set overlaps...
+Calculating universe set overlaps...
+Calculating Fisher scores...
+Reading collection annotations: 
+	database: found collection annotation:/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/collection.txt
+Reading region annotations...
+/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3//database/regions
+	In 'database', found index file:/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/index.txt
+Collection: database. Creating size file...
+database
+Reading 5 files...
+1: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/ADHD.bed
+2: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/ASD.bed
+3: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/BIP.bed
+4: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/MDD.bed
+5: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/SCZ.bed
+Converting GRanges to GRangesList.
+You have non-disjoint userSets.
+Calculating unit set overlaps...
+Calculating universe set overlaps...
+Calculating Fisher scores...
+Reading collection annotations: 
+	database: found collection annotation:/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/collection.txt
+Reading region annotations...
+/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3//database/regions
+	In 'database', found index file:/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/index.txt
+Collection: database. Creating size file...
+database
+Reading 5 files...
+1: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/ADHD.bed
+2: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/ASD.bed
+3: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/BIP.bed
+4: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/MDD.bed
+5: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/SCZ.bed
+Converting GRanges to GRangesList.
+You have non-disjoint userSets.
+Calculating unit set overlaps...
+Calculating universe set overlaps...
+Calculating Fisher scores...
+Reading collection annotations: 
+	database: found collection annotation:/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/collection.txt
+Reading region annotations...
+/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3//database/regions
+	In 'database', found index file:/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/index.txt
+Collection: database. Creating size file...
+database
+Reading 5 files...
+1: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/ADHD.bed
+2: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/ASD.bed
+3: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/BIP.bed
+4: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/MDD.bed
+5: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/SCZ.bed
+Converting GRanges to GRangesList.
+You have non-disjoint userSets.
+Calculating unit set overlaps...
+Calculating universe set overlaps...
+Calculating Fisher scores...
+Reading collection annotations: 
+	database: found collection annotation:/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/collection.txt
+Reading region annotations...
+/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3//database/regions
+	In 'database', found index file:/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/index.txt
+Collection: database. Creating size file...
+database
+Reading 5 files...
+1: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/ADHD.bed
+2: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/ASD.bed
+3: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/BIP.bed
+4: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/MDD.bed
+5: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/SCZ.bed
+Converting GRanges to GRangesList.
+You have non-disjoint userSets.
+Calculating unit set overlaps...
+Calculating universe set overlaps...
+Calculating Fisher scores...
+Reading collection annotations: 
+	database: found collection annotation:/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/collection.txt
+Reading region annotations...
+/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3//database/regions
+	In 'database', found index file:/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/index.txt
+Collection: database. Creating size file...
+database
+Reading 5 files...
+1: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/ADHD.bed
+2: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/ASD.bed
+3: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/BIP.bed
+4: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/MDD.bed
+5: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/SCZ.bed
+Converting GRanges to GRangesList.
+You have non-disjoint userSets.
+Calculating unit set overlaps...
+Calculating universe set overlaps...
+Calculating Fisher scores...
+Reading collection annotations: 
+	database: found collection annotation:/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/collection.txt
+Reading region annotations...
+/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3//database/regions
+	In 'database', found index file:/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/index.txt
+Collection: database. Creating size file...
+database
+Reading 5 files...
+1: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/ADHD.bed
+2: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/ASD.bed
+3: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/BIP.bed
+4: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/MDD.bed
+5: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/SCZ.bed
+Converting GRanges to GRangesList.
+You have non-disjoint userSets.
+Calculating unit set overlaps...
+Calculating universe set overlaps...
+Calculating Fisher scores...
+Reading collection annotations: 
+	database: found collection annotation:/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/collection.txt
+Reading region annotations...
+/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3//database/regions
+	In 'database', found index file:/Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/index.txt
+Collection: database. Creating size file...
+database
+Reading 5 files...
+1: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/ADHD.bed
+2: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/ASD.bed
+3: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/BIP.bed
+4: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/MDD.bed
+5: /Library/Frameworks/R.framework/Versions/Current/Resources/library/LOLA/extdata/disorders3/database/regions/SCZ.bed
+Converting GRanges to GRangesList.
+You have non-disjoint userSets.
+Calculating unit set overlaps...
+Calculating universe set overlaps...
+Calculating Fisher scores...
+There were 50 or more warnings (use warnings() to see the first 50)
+> 
+> 
+> pdf("GWAS_ENRICH_COOLMOD.pdf",width=6,height=5,useDingbats=FALSE)
+> ggplot(df, aes(x = log, y = logOddsRatio, group=Class, size = logOddsRatio,label=gsub(".txt|.bed","",df$filename),color=gsub(".txt|.bed","",df$filename))) +
++ geom_point(shape=21) + 
++ geom_text_repel(size = 2, colour = "black") + 
++ theme_classic() + # clean up theme
++ theme(legend.position = "none") + # remove legend
++ xlab(expression(-log[10]("FDR"))) + # x-axis label
++ ylab(expression(log[2]("OR")))+
++ xlim(0,20)+
++ ylim(0,5)+
++ geom_vline(xintercept = 1.3, linetype="dotted", color = "red", size=1) + theme(legend.position="none")+
++ facet_wrap(~ Class,ncol=3)
+> dev.off()
+null device 
+          1 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> proc.time()
+   user  system elapsed 
+ 13.165   0.442  13.689 

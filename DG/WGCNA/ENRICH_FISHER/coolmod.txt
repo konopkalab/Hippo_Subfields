@@ -1,0 +1,10 @@
+pink
+darkturquoise
+cyan
+lightcyan
+midnightblue
+darkgrey
+blue
+white
+red
+green

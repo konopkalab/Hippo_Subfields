@@ -1,0 +1,6 @@
+userSet	dbSet	collection	pValueLog	logOddsRatio	support	rnkPV	rnkLO	rnkSup	maxRnk	meanRnk	b	c	d	description	cellType	tissue	antibody	treatment	dataSource	filename	size
+1	1	5	database	0.434022466490065	1.11723167718923	17	1	1	2	2	1.33	1422	198	18504	database	NA	NA	NA	NA	NA	SCZ.bed	4445
+2	1	2	database	0.395502108682699	1.04525034363859	81	2	2	1	2	1.67	7301	134	12625	database	NA	NA	NA	NA	NA	ASD.bed	66991
+3	1	1	database	0.0772783744811633	0.679284581246167	4	3	3	4	4	3.33	541	211	19385	database	NA	NA	NA	NA	NA	ADHD.bed	1803
+4	1	3	database	0.00242693984368899	0.420666833990894	6	4	4	3	4	3.67	1273	209	18653	database	NA	NA	NA	NA	NA	BIP.bed	6130
+5	1	4	database	0.000770303654841636	0.279274363875074	3	5	5	5	5	5	961	212	18965	database	NA	NA	NA	NA	NA	MDD.bed	3254
