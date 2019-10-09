@@ -1,4 +1,4 @@
-Within Subject data analysis
+Hippocampus Subfield data analysis
 ==========================
 
 This repository contains analysis code for the hippocampal subfield project carried out by researchers at the [Konopka Lab, UTSW](http://konopkalab.org/) and [Tamminga Lab, UTSW](https://www.utsouthwestern.edu/labs/schizophrenia/)
