@@ -7,8 +7,6 @@ This repository contains analysis code for the hippocampal subfield project carr
 
 If you use anything in this repository please cite the following publication:
 
-Pre-print URL: 
-
 ## Files
 This repository contains the data, code, and analyses used in Perez et al. 2019 "Hippocampal subfield transcriptome analysis in schizophrenia psychosis"
 
